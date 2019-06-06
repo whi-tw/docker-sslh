@@ -1,22 +1,39 @@
+FROM alpine:3.9.4 as builder
+
+ADD src /build
+
+WORKDIR /build
+
+RUN \
+  apk add \
+    gcc \
+    libconfig-dev \
+    make \
+    musl-dev \
+    pcre-dev \
+    perl && \
+  make sslh-select && \
+  strip sslh-select
+
+
 FROM alpine:3.9.4
-MAINTAINER Anon <someone@shaddy.space>
 
-ENV LISTEN_IP 0.0.0.0
-ENV LISTEN_PORT 443
-ENV SSH_HOST localhost
-ENV SSH_PORT 22
-ENV OPENVPN_HOST localhost
-ENV OPENVPN_PORT 1194
-ENV HTTPS_HOST localhost
-ENV HTTPS_PORT 8443
-ENV SHADOWSOCKS_HOST localhost
-ENV SHADOWSOCKS_PORT 8388
+LABEL org.label-schema.build-date=$BUILD_DATE \
+      org.label-schema.vcs-ref=$VCS_REF \
+      org.label-schema.vcs-url="https://github.com/tnwhitwell/sslh-hub" \
+      org.label-schema.docker.cmd="docker run -e SSH_HOST=host -e HTTPS_HOST=host -e OPENVPN_HOST=host -e SHADOWSOCKS_HOST=host -p 443:8443 tnwhitwell/sslh-hub" \
+      org.label-schema.docker.params="SSH_HOST=host running sshd,SSH_PORT=port to connect to SSH_HOST on. Default: 22,HTTPS_HOST=host running HTTPS server, HTTPS_PORT=port to connect to HTTPS_HOST on. Default: 443,OPENVPN_HOST=host running openvpn,OPENVPN_PORT=port to connect to OPENVPN_HOST on. Default: 1194,SHADOWSOCKS_HOST=host running shadowsocks,SHADOWSOCKS_PORT=port to connect to SHADOWSOCKS_HOST on. Default:8388" \
+      org.label-schema.schema-version="1.0" \
+      maintainer="Tom Whitwell <tom@whi.tw>"
 
-RUN apk update && \
-       apk add --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ sslh && \
-       rm -rf /var/cache/apk/*
+RUN apk --no-cache add libconfig pcre && adduser -D -g '' sslh
 
-ADD entry.sh /usr/local/bin/entry.sh
-RUN chmod +x /usr/local/bin/entry.sh
+COPY --from=builder /build/sslh-select /sslh
 
-ENTRYPOINT ["/usr/local/bin/entry.sh"]
+COPY entry.sh /usr/local/bin/entry.sh
+
+USER sslh
+
+EXPOSE 8443
+
+ENTRYPOINT ["/bin/sh", "/usr/local/bin/entry.sh"]
