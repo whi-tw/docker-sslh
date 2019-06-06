@@ -1,4 +1,4 @@
-FROM alpine:3.6
+FROM alpine:3.9.4
 MAINTAINER Anon <someone@shaddy.space>
 
 ENV LISTEN_IP 0.0.0.0
