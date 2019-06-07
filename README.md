@@ -1,36 +1,58 @@
-sslh-hub
-========
+# docker-sslh
 
-[![Docker Pulls](https://img.shields.io/docker/pulls/shaddysignal/sslh-hub.svg)](https://hub.docker.com/r/shaddysignal/sslh-hub/)
+[![Docker Pulls](https://img.shields.io/docker/pulls/tnwhitwell/sslh.svg)](https://hub.docker.com/r/tnwhitwell/sslh/)
+[![Image Layers](https://images.microbadger.com/badges/image/tnwhitwell/sslh.svg)](https://microbadger.com/images/tnwhitwell/sslh "Get your own image badge on microbadger.com")
+[![Latest built Commit](https://images.microbadger.com/badges/commit/tnwhitwell/sslh.svg)](https://microbadger.com/images/tnwhitwell/sslh "Get your own commit badge on microbadger.com")
+[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=tnwhitwell/docker-sslh)](https://dependabot.com)
 
-Docker image containing sslh with some configs. Based on alpine image.
+Docker alpine image containing [sslh](https://github.com/yrutschle/sslh), configurable with environment variables.
 
-Usage
------
+## Usage
 
-Start and expose 443
+By default, no multiplexing options are enabled:
+
+> Start and expose port 443 with no configurations
+
 ```bash
-   docker run -d -p 443:443 --name sslh-hub shaddysignal/sslh-hub
+docker run -d -p 443:8443 --name sslh tnwhitwell/sslh
 ```
 
-Enviroment variables for manipulating container. Names are self explonatory, I hope.
+To configure a backend, set at least the `*_HOST` env var:
+
+> Start and configure SSH and HTTPS with default ports
+
 ```bash
-LISTEN_IP 0.0.0.0
-LISTEN_PORT 443
+docker run -e SSH_HOST=host -e HTTPS_HOST=somehost.internal -p 443:8443 tnwhitwell/sslh
+```
 
-SSH_HOST localhost
-SSH_PORT 22
+If the service is not listening on the default port, it can be overridden with the `*_PORT` env var:
 
-OPENVPN_HOST localhost
-OPENVPN_PORT 1194
+> Start and configure SSH and HTTPS with custom ports
 
-HTTPS_HOST localhost
-HTTPS_PORT 8443
+```bash
+docker run -e SSH_HOST=host -e SSH_PORT=2222 -e HTTPS_HOST=somehost.internal -e HTTPS_PORT=8443 -p 443:8443 tnwhitwell/sslh
+```
 
-SHADOWSOCKS_HOST localhost
-SHADOWSOCKS_PORT 8388
+### Available Environment Variables
+
+Naming should be self explanatory, defaults are indicated.
+
+If a `*_HOST` environment variable is omitted, it will not be configured.
+
+```bash
+HTTPS_HOST=
+HTTPS_PORT=443
+
+OPENVPN_HOST=
+OPENVPN_PORT=1194
+
+SHADOWSOCKS_HOST=
+SHADOWSOCKS_PORT=8388
+
+SSH_HOST=
+SSH_PORT=22
 ```
 
 ----
 
-Thanks to docker image amondit/sslh for inspiration.
+Thanks to [@shaddysignal](https://github.com/shaddysignal)'s [sslh-hub](https://github.com/shaddysignal/sslh-hub) for inspiration.
