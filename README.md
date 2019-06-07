@@ -51,6 +51,31 @@ SHADOWSOCKS_PORT=8388
 
 SSH_HOST=
 SSH_PORT=22
+
+TRANSPARENT=false # This is currently WIP and doesn't seem to work properly. This could be a me problem, though, and could do with some investigation.
+```
+
+## docker-compose
+
+This can also be run with docker-compose:
+
+```yaml
+---
+version: '3'
+services:
+  web:
+    image: nginx:latest
+  sslh:
+    image: tnwhitwell/sslh:latest
+    ports:
+      - 443:8443
+    environment:
+      HTTPS_HOST: web
+      HTTPS_PORT: 443
+      SSH_HOST: 172.17.0.1 # Point to the Docker Host's IP
+      SSH_PORT: 22
+    depends_on:
+      - web
 ```
 
 ----
