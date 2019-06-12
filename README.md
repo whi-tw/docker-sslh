@@ -1,8 +1,13 @@
 # docker-sslh
 
+![Update Status](https://concourse.whitwell.dev/api/v1/teams/main/pipelines/docker-sslh/badge)
+
 [![Docker Pulls](https://img.shields.io/docker/pulls/tnwhitwell/sslh.svg)](https://hub.docker.com/r/tnwhitwell/sslh/)
+
 [![Image Layers](https://images.microbadger.com/badges/image/tnwhitwell/sslh.svg)](https://microbadger.com/images/tnwhitwell/sslh "Get your own image badge on microbadger.com")
+
 [![Latest built Commit](https://images.microbadger.com/badges/commit/tnwhitwell/sslh.svg)](https://microbadger.com/images/tnwhitwell/sslh "Get your own commit badge on microbadger.com")
+
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=tnwhitwell/docker-sslh)](https://dependabot.com)
 
 Docker alpine image containing [sslh](https://github.com/yrutschle/sslh), configurable with environment variables.
