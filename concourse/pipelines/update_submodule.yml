@@ -1,0 +1,53 @@
+meta:
+  containers:
+    git-ssh: &git-ssh-image-resource
+      type: docker-image
+      source:
+        repository: governmentpaas/git-ssh
+        tag: f3875548cbc723e9f0ea487aaba5f38302279f72
+jobs:
+  - name: update_submodule
+    plan:
+      - get: docker-sslh
+        trigger: true
+      - get: sslh-releases
+        trigger: true
+      - task: update-submodule
+        config:
+          platform: linux
+          image_resource: *git-ssh-image-resource
+          inputs:
+            - name: docker-sslh
+          outputs:
+            - name: docker-sslh_updated
+          run:
+            path: sh
+            args:
+              - -e
+              - -c
+              - |
+                git config --global push.default simple
+                git config --global user.email "concourse@whitwell.dev"
+                git config --global user.name "Concourse"
+                ./docker-sslh/concourse/scripts/update-submodule.sh
+      - put: docker-sslh
+        params: {repository: docker-sslh_updated}
+
+resources:
+  - name: docker-sslh
+    type: git
+    source:
+      uri: git@github.com:tnwhitwell/docker-sslh.git
+      branch: master
+      private_key: |
+        ((concourse-ssh-key.id_rsa))
+  - name: sslh-releases
+    type: feed
+    check_every: 30m
+    source:
+      feed: https://github.com/yrutschle/sslh/releases.atom
+resource_types:
+  - name: feed
+    type: docker-image
+    source:
+      repository: databus23/concourse-feed-resource

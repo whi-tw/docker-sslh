@@ -1,8 +1,9 @@
 #!/bin/bash
-docker tag ${IMAGE_NAME} ${DOCKER_REPO}:${SOURCE_COMMIT}
 pushd src
+VCS_REF=$(git rev-parse HEAD)
 SOURCE_TAG=$(git describe --exact-match --tags)
 popd
+docker tag ${IMAGE_NAME} ${DOCKER_REPO}:${VCS_REF}
 docker tag ${IMAGE_NAME} ${DOCKER_REPO}:${SOURCE_TAG}
 docker push ${DOCKER_REPO}:${SOURCE_COMMIT}
 docker push ${DOCKER_REPO}:${SOURCE_TAG}
