@@ -1,4 +1,4 @@
-FROM alpine:3.9.4 as builder
+FROM alpine:3.12.2 as builder
 
 ADD src /build
 
@@ -17,7 +17,7 @@ RUN \
   strip sslh-select
 
 
-FROM alpine:3.9.4
+FROM alpine:3.12.2
 
 ARG VCS_REF
 ARG BUILD_DATE
